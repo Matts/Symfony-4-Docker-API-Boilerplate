@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+    php:
+      image: mattsmeets/symfony-php-dev:1.0
+      networks:
+      - net
+      volumes:
+      - ./:/var/www/symfony
+
+    nginx:
+      image: mattsmeets/symfony-nginx:1.0
+      ports:
+      - 80:80
+      networks:
+      - net
+      depends_on:
+      - mysql
+      - php
+      volumes:
+      - ./var/logs/nginx/:/var/log/nginx
+      - ./:/var/www/symfony
+
+    mysql:
+      image: mysql
+      ports:
+      - 3310:3306
+      networks:
+      - net
+      volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./:/var/www
+      environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_USER: root
+
+networks:
+    net:
+      driver: bridge
